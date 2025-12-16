@@ -1,0 +1,25 @@
+<div class="card">
+  <h2>Inicio de Sesión</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+    <label>Correo</label>
+    <input type="email" formControlName="correo" autocomplete="off" autocapitalize="none" />
+    <small class="error"
+      *ngIf="form.controls['correo']?.touched && form.controls['correo']?.invalid">
+      Ingresa un correo válido.
+    </small>
+
+    <label>Contraseña</label>
+    <input type="password" formControlName="password" autocomplete="off" />
+    <small class="error"
+      *ngIf="form.controls['password']?.touched && form.controls['password']?.invalid">
+      La contraseña es requerida.
+    </small>
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Ingresando...' : 'Ingresar' }}
+    </button>
+
+    <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+  </form>
+</div>

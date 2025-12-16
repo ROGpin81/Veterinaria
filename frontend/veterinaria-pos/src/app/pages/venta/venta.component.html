@@ -1,0 +1,109 @@
+<div class="container">
+  <div class="topbar card">
+    <div>
+      <div class="title">Registro de Venta</div>
+      <div class="subtitle muted">Selecciona cliente, agrega cantidades y registra la venta.</div>
+    </div>
+
+    <div class="topbar-actions no-print">
+      <button class="btn btn-secondary" type="button" (click)="cargarDataInicial()" [disabled]="loadingInit || loadingAction">
+        <span *ngIf="loadingInit" class="spinner"></span>
+        <span *ngIf="!loadingInit">Recargar</span>
+      </button>
+
+      <button class="btn btn-danger" type="button" (click)="logout()" [disabled]="loadingInit || loadingAction">
+        Salir
+      </button>
+    </div>
+  </div>
+
+  <div class="alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <div class="grid">
+    <!-- PANEL IZQUIERDO -->
+    <div class="panel card">
+      <h3>Cliente</h3>
+
+      <label>Seleccionar</label>
+      <select [(ngModel)]="idClienteSeleccionado" [disabled]="loadingInit || loadingAction">
+        <option [ngValue]="null">-- Selecciona --</option>
+        <option *ngFor="let c of clientes" [ngValue]="c.id_cliente">
+          {{ c.nombre }} {{ c.telefono ? ('- ' + c.telefono) : '' }}
+        </option>
+      </select>
+
+      <button class="btn btn-secondary" type="button" (click)="toggleCrearCliente()" [disabled]="loadingInit || loadingAction">
+        {{ crearClienteMode ? 'Cancelar' : 'Crear cliente rápido' }}
+      </button>
+
+      <div class="subcard" *ngIf="crearClienteMode">
+        <label>Nombre</label>
+        <input class="input" [(ngModel)]="nuevoClienteNombre" [disabled]="loadingAction" placeholder="Nombre del cliente" />
+
+        <label>Teléfono (opcional)</label>
+        <input class="input" [(ngModel)]="nuevoClienteTelefono" [disabled]="loadingAction" placeholder="0000-0000" />
+
+        <button class="btn btn-primary" type="button" (click)="guardarClienteRapido()" [disabled]="loadingAction">
+          <span *ngIf="loadingAction" class="spinner"></span>
+          <span *ngIf="!loadingAction">Guardar cliente</span>
+        </button>
+      </div>
+
+      <div class="resume">
+        <div class="resume-row">
+          <span class="muted">Total</span>
+          <strong class="total">L. {{ totalActual() | number:'1.2-2' }}</strong>
+        </div>
+
+        <button class="btn btn-primary" type="button" (click)="registrarVenta()"
+                [disabled]="loadingInit || loadingAction || totalActual() === 0">
+          <span *ngIf="loadingAction" class="spinner"></span>
+          <span *ngIf="!loadingAction">Registrar venta</span>
+        </button>
+
+        <div class="muted tip" *ngIf="totalActual() === 0">
+          Agrega cantidades para habilitar el registro.
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <div class="panel card">
+      <h3>Productos / Servicios</h3>
+
+      <div class="muted" *ngIf="loadingInit">Cargando productos y clientes…</div>
+
+      <div class="table" *ngIf="!loadingInit">
+        <div class="thead">
+          <div>Nombre</div>
+          <div>Tipo</div>
+          <div>Precio</div>
+          <div>Stock</div>
+          <div>Cant.</div>
+          <div>Subtotal</div>
+        </div>
+
+        <div class="trow" *ngFor="let p of productos">
+          <div class="name">{{ p.nombre }}</div>
+          <div>{{ p.tipo }}</div>
+          <div>L. {{ p.precio | number:'1.2-2' }}</div>
+          <div>{{ p.tipo === 'PRODUCTO' ? p.stock : '-' }}</div>
+
+          <div>
+            <input class="input"
+              type="number"
+              min="0"
+              [max]="p.tipo === 'PRODUCTO' ? p.stock : 999999"
+              [(ngModel)]="qty[p.id_producto]"
+              [disabled]="loadingAction"
+            />
+          </div>
+
+          <div class="sub">
+            L. {{ ((qty[p.id_producto] || 0) * p.precio) | number:'1.2-2' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

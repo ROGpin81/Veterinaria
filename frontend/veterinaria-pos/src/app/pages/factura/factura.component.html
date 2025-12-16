@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="topbar card">
+    <div>
+      <div class="title">Factura</div>
+      <div class="subtitle muted">Resumen de venta y detalle de productos/servicios.</div>
+    </div>
+
+    <div class="topbar-actions no-print">
+      <button class="btn btn-secondary" type="button" (click)="nuevaVenta()">Nueva venta</button>
+      <button class="btn btn-secondary" type="button" (click)="imprimir()">Imprimir</button>
+      <button class="btn btn-danger" type="button" (click)="logout()">Salir</button>
+    </div>
+  </div>
+
+  <div class="alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <div class="card body" *ngIf="loading">
+    <span class="spinner"></span>
+    <span class="muted">Cargando factura…</span>
+  </div>
+
+  <ng-container *ngIf="!loading && data">
+    <div class="card body">
+      <div class="header">
+        <div>
+          <div class="brand">{{ data.veterinaria?.nombre || 'Veterinaria' }}</div>
+          <div class="muted small" *ngIf="data.veterinaria?.direccion">Dirección: {{ data.veterinaria?.direccion }}</div>
+          <div class="muted small" *ngIf="data.veterinaria?.telefono">Tel: {{ data.veterinaria?.telefono }}</div>
+          <div class="muted small" *ngIf="data.veterinaria?.email">Email: {{ data.veterinaria?.email }}</div>
+          <div class="muted small" *ngIf="data.veterinaria?.rtn">RTN: {{ data.veterinaria?.rtn }}</div>
+        </div>
+
+        <div class="badge">
+          <div><strong>No. Venta:</strong> {{ data.factura.id_venta }}</div>
+          <div><strong>Fecha:</strong> {{ data.factura.fecha | date:'medium' }}</div>
+          <div><strong>Atendió:</strong> {{ data.factura.usuario }}</div>
+        </div>
+      </div>
+
+      <div class="badge">
+        <div><strong>Cliente:</strong> {{ data.factura.cliente }}</div>
+        <div *ngIf="data.factura.telefono_cliente"><strong>Tel:</strong> {{ data.factura.telefono_cliente }}</div>
+      </div>
+
+      <div class="table">
+        <div class="thead">
+          <div>Producto/Servicio</div>
+          <div>Tipo</div>
+          <div>Cant.</div>
+          <div>Precio</div>
+          <div>Subtotal</div>
+        </div>
+
+        <div class="trow" *ngFor="let d of data.detalle">
+          <div class="name">{{ d.producto }}</div>
+          <div>{{ d.tipo }}</div>
+          <div>{{ d.cantidad }}</div>
+          <div>L. {{ d.precio_unitario | number:'1.2-2' }}</div>
+          <div class="sub">L. {{ d.subtotal | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div class="total">
+        <span>Total</span>
+        <strong>L. {{ data.factura.total | number:'1.2-2' }}</strong>
+      </div>
+    </div>
+  </ng-container>
+</div>
